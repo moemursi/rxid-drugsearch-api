@@ -45,25 +45,21 @@ npm start
 
 If running locally, the beginning of your url will be http://localhost:3000
 
-Then you can send the following JSON body to "http://<url>/drug/search/getDrugIdentifiers":
+Then you can send the request to "http://<url>/drug/search/getDrugIdentifiers" using query string parameters like below:
+
 ```
+drugName=<drugName>
+```
+
+The sample postman for local server testing has been added to the <strong>/misc/postman</strong> directory as a <a href="https://github.com/EdyVision/drug-search-service/blob/master/misc/postman/Drug%20Search%20Service.postman_collection.json">Postman Collection</a>.
 
 Successful Email Submission Response: <a href="https://github.com/EdyVision/drug-search-service/blob/master/misc/postman/sampleResponse_lipitor.json">Sample Response</a>
 
-Unverified Email Error Response
+Error Response where query string parameters are null:
 
 ```
 {
-    "statusCode": 500,
-    "body": {
-        "message": "Email address is not verified. The following identities failed the check in region US-EAST-1: test@test.com",
-        "code": "MessageRejected",
-        "time": "2019-06-01T21:24:10.080Z",
-        "requestId": "6eacc776-84b3-11e9-b4ea-17b8cd3bf01c",
-        "statusCode": 400,
-        "retryable": false,
-        "retryDelay": 80.13833346952002
-    }
+    "error": "Query is empty!"
 }
 ```
 

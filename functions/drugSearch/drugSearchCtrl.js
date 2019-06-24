@@ -27,7 +27,7 @@ module.exports.getDrugIdentifiers = query => {
             statusCode: 400
         };
 
-        if (query) {
+        if (query && query.queryStringParameters) {
             let drugName = query.queryStringParameters.drugName;
             if (!drugName) {
                 resolve({
