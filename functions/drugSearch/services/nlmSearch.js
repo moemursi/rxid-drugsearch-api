@@ -90,6 +90,12 @@ module.exports.nlmDataDiscoverySearch = function(rxcui) {
     });
 };
 
+/**
+ * Remaps returned NLM markings results to desired format
+ *
+ * @param {Array} data drug collection
+ * @returns {Array} drug markings collection
+ */
 function remapMarkingResults(data) {
     let markingsCollection = [];
 
@@ -117,6 +123,12 @@ function remapMarkingResults(data) {
     return markingsCollection;
 };
 
+/**
+ * Remaps returned NLM image results to desired format
+ *
+ * @param {Array} data drug collection
+ * @returns {Array} drug image collection
+ */
 function remapImageResults(data) {
     let imageCollection = [];
     if (data.length > 0) {
