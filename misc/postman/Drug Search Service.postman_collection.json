@@ -1,0 +1,36 @@
+{
+	"info": {
+		"_postman_id": "d954d4aa-95e6-4f2e-bb43-306b26a58d43",
+		"name": "Drug Search Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Drug Identifiers Query",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/drug/search/getDrugIdentifiers?drugName=Lipitor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"drug",
+						"search",
+						"getDrugIdentifiers"
+					],
+					"query": [
+						{
+							"key": "drugName",
+							"value": "Lipitor"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

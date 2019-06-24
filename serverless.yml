@@ -1,0 +1,34 @@
+# Serverless Drug Search Service
+# Example from Medium Post [post link]
+
+service: drug-search-service
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  apiGateway:
+    apiKeySourceType: HEADER
+
+functions:
+  getDrugIdentifiers:
+    handler: handler.getDrugIdentifiers
+    events:
+        - http:
+            path: drug/search/getDrugIdentifiers
+            method: get
+            cors: true
+            private: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-prune-plugin
+
+custom:
+  webpackIncludeModules: true
+  # Prune Old Deployments, otherwise you'll max out on storage space
+  prune:
+    automatic: true
+    number: 3
