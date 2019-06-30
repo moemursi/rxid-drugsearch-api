@@ -7,5 +7,4 @@ cache:
 script: 
     - npm install -g serverless
     - npm install
-    - npm run pretest
     - npm test
