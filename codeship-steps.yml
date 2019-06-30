@@ -1,9 +1,0 @@
-- type: parallel
-  steps:
-  - name: tests
-    service: drug-search-service
-    command: bin/ci "npm install -g serverless; npm install; npm test"
-- name: deploy # added this step
-  tag: master
-  service: deploy
-  command: bin/ci "sls deploy -v"
