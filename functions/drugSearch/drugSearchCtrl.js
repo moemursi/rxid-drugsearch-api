@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 'use strict';
 
 const nlmSearch = require('./services/nlmSearch');
@@ -21,7 +22,7 @@ module.exports.getDrugIdentifiers = query => {
         let resp = {
             results: {
                 name: '',
-                identifier: {},
+                identifier: {}
             },
             errors: [],
             statusCode: 400
@@ -38,7 +39,6 @@ module.exports.getDrugIdentifiers = query => {
                     headers: headers
                 });
             } else {
-
                 let nlmRxImageSuccess = false;
                 let nlmDrugDatabaseSuccess = false;
 
@@ -64,17 +64,20 @@ module.exports.getDrugIdentifiers = query => {
                                 })
                                 .catch(error => resp.errors.push(error));
                         }
-
                     })
                     .catch(error => resp.errors.push(error));
 
                 resolve({
-                    statusCode: nlmRxImageSuccess || nlmDrugDatabaseSuccess ? 200 : 400,
-                    body: JSON.stringify(nlmRxImageSuccess || nlmDrugDatabaseSuccess ? resp.results : resp.errors),
+                    statusCode:
+                        nlmRxImageSuccess || nlmDrugDatabaseSuccess ? 200 : 400,
+                    body: JSON.stringify(
+                        nlmRxImageSuccess || nlmDrugDatabaseSuccess
+                            ? resp.results
+                            : resp.errors
+                    ),
                     headers: headers
                 });
             }
-
         } else {
             resolve({
                 statusCode: 400,

@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 'use strict';
 
 const apiUtil = require('../../../common/utils/apiUtil');
@@ -31,15 +32,17 @@ module.exports.nlmDrugImageSearch = function(name) {
             await apiUtil
                 .submitRequest(identifierSearchUrl)
                 .then(response => {
-                    if (response.statusCode == 200){
-                        result.data = remapImageResults(response.data.nlmRxImages);
+                    if (response.statusCode == 200) {
+                        result.data = remapImageResults(
+                            response.data.nlmRxImages
+                        );
                         result.success = true;
                     }
                 })
                 .catch(error => {
                     resolve({
                         error: error
-                    })
+                    });
                 });
 
             resolve(result);
@@ -80,7 +83,7 @@ module.exports.nlmDataDiscoverySearch = function(rxcui) {
                 .catch(error => {
                     resolve({
                         error: error
-                    })
+                    });
                 });
         } else {
             resolve({
@@ -121,7 +124,7 @@ function remapMarkingResults(data) {
     }
 
     return markingsCollection;
-};
+}
 
 /**
  * Remaps returned NLM image results to desired format
@@ -147,4 +150,4 @@ function remapImageResults(data) {
         }
     }
     return imageCollection;
-};
+}
