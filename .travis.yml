@@ -4,7 +4,19 @@ node_js:
 cache:
   directories:
     - node_modules
-script: 
-    - npm install -g serverless
-    - npm install
-    - npm test
+
+install:
+  - npm install -g serverless
+
+jobs:
+  include:
+    - stage: "Tests"                # naming the Tests stage
+      name: "Unit Tests"            # names the first Tests stage job
+      script: 
+        - npm install
+        - npm test
+    - stage: deploy
+      name: "Deploy to AWS"
+      script: sls deploy -v
+      on:
+        branch: master
