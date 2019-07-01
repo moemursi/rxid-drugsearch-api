@@ -19,6 +19,6 @@ jobs:
     - stage: deploy
       name: "Deploy to AWS"
       script: sls deploy -v
+      if: NOT type = pull_request
       on:
         branch: master
-        condition: type != pull_request
