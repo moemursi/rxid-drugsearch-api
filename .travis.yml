@@ -1,10 +1,7 @@
 language: node_js
 node_js:
 - "10"
-stages:
-  - name: deploy
-    # require the branch name to be master (note for PRs this is the base branch name)
-    if: branch = master
+
 cache:
   directories:
     - node_modules
@@ -22,3 +19,5 @@ jobs:
     - stage: deploy
       name: "Deploy to AWS"
       script: sls deploy -v
+      on:
+        branch: master
