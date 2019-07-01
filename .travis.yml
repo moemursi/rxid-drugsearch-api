@@ -21,3 +21,4 @@ jobs:
       script: sls deploy -v
       on:
         branch: master
+        condition: type != pull_request
