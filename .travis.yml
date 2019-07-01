@@ -18,5 +18,4 @@ jobs:
     - stage: deploy
       name: "Deploy to AWS"
       script: sls deploy -v
-      on:
-        branch: master
+      if: branch = master
