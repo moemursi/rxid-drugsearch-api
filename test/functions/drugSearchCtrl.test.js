@@ -11,7 +11,7 @@ describe('drugSearchCtrl getDrugIdentifiers', function drugSearchCtrlTest() {
     let nlmDrugImageSearchSpy = sinon.spy(nlmSearch, 'nlmDrugImageSearch');
 
     context('input missing - ', function() {
-        it('search failure', async function() {
+        it('should return a failure', async function() {
             let result;
             await drugSearchCtrl
                 .getDrugIdentifiers(null)
@@ -30,7 +30,7 @@ describe('drugSearchCtrl getDrugIdentifiers', function drugSearchCtrlTest() {
             }
         };
 
-        it('search success', async function() {
+        it('should return a successful search', async function() {
             let result;
             await drugSearchCtrl
                 .getDrugIdentifiers(event)
