@@ -3,18 +3,12 @@
 
 const nlmSearch = require('./services/nlmSearch');
 
-// Headers needed for Locked Down APIs
-const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers':
-        'Origin, X-Requested-With, Content-Type, Accept, X-Api-Key, Authorization',
-    'Access-Control-Allow-Credentials': 'true'
-};
+const promisesUtil = require('../../common/utils/promisesUtil');
 
 /**
- * Drug Identifier Search Endpoint
+ * Drug Identifier Search Controller
  *
- * @param {*} query Required Query Input: Name or NDC
+ * @param {*} query Required Query Input: drugName
  * @returns {Promise} drug identifiers
  */
 module.exports.getDrugIdentifiers = query => {
@@ -31,13 +25,11 @@ module.exports.getDrugIdentifiers = query => {
         if (query && query.queryStringParameters) {
             let drugName = query.queryStringParameters.drugName;
             if (!drugName) {
-                resolve({
-                    statusCode: 400,
-                    body: JSON.stringify({
+                resolve(
+                    promisesUtil.formatPromisePayload(400, {
                         error: 'Drug name parameter is empty!!!'
-                    }),
-                    headers: headers
-                });
+                    })
+                );
             } else {
                 let nlmRxImageSuccess = false;
                 let nlmDrugDatabaseSuccess = false;
@@ -67,23 +59,21 @@ module.exports.getDrugIdentifiers = query => {
                     })
                     .catch(error => resp.errors.push(error));
 
-                resolve({
-                    statusCode:
+                resolve(
+                    promisesUtil.formatPromisePayload(
                         nlmRxImageSuccess || nlmDrugDatabaseSuccess ? 200 : 400,
-                    body: JSON.stringify(
                         nlmRxImageSuccess || nlmDrugDatabaseSuccess
                             ? resp.results
                             : resp.errors
-                    ),
-                    headers: headers
-                });
+                    )
+                );
             }
         } else {
-            resolve({
-                statusCode: 400,
-                body: JSON.stringify({ error: 'Query is empty!' }),
-                headers: headers
-            });
+            resolve(
+                promisesUtil.formatPromisePayload(400, {
+                    error: 'Query is empty!'
+                })
+            );
         }
     });
 };

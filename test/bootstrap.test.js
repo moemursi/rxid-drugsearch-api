@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const { spawn } = require('child_process');
-const getSlsOfflinePort = require('./support/getSlsOfflinePort');
+const slsOfflineTestConfig = require('./support/slsOfflineTestConfig');
 
 let slsOfflineProcess;
 
@@ -36,7 +36,7 @@ function startSlsOffline(done) {
         'start',
         '--noAuth',
         '--port',
-        getSlsOfflinePort()
+        slsOfflineTestConfig.getSlsOfflinePort()
     ]);
 
     console.log(
