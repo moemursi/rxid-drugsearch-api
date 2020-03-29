@@ -1,22 +1,21 @@
-# Serverless Drug Search Service
-# Example from Medium Post [post link]
+# RXID Drug Search Service
 
-service: drug-search-service
+service: rxid-api
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   apiGateway:
     apiKeySourceType: HEADER
 
 functions:
-  getDrugIdentifiers:
+  getRxIdentifier:
     handler: handler.getDrugIdentifiers
     events:
         - http:
-            path: drug/search/getDrugIdentifiers
+            path: drug/search/getRxIdentifier
             method: get
             cors: true
             private: true
