@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 
 let drugSearchCtrl = require('../../functions/drugSearch/drugSearchCtrl');
-let nlmSearch = require('../../functions/drugSearch/services/nlmSearch');
+let nlmSearch = require('../../functions/drugSearch/services/nlmClient');
 
 describe('drugSearchCtrl getDrugIdentifiers', function drugSearchCtrlTest() {
     // NLM Drug Search Service Spy
