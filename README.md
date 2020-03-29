@@ -1,14 +1,6 @@
 # Drug Search Service
-[![Build Status](https://travis-ci.org/EdyVision/drug-search-service.png)](https://travis-ci.org/EdyVision/drug-search-service)
-[![Known Vulnerabilities](https://snyk.io/test/github/EdyVision/drug-search-service/badge.svg)](https://snyk.io/test/github/EdyVision/drug-search-service)
+[![Known Vulnerabilities](https://snyk.io/test/github/EdyVision/rxid-drugsearch-api/badge.svg)](https://snyk.io/test/github/EdyVision/rxid-drugsearch-api)
 
-A simple drug search api written in NodeJS and built on the Serverless framework. This repository is a part of the Medium AWS Serverless App tutorial series published in Better Programming. Check it out!
-
-<ul>
-    <li><a href="https://medium.com/better-programming/aws-serverless-app-where-to-start-11268309a1cf">Where to Start</a></li>
-    <li><a href="https://medium.com/better-programming/aws-serverless-app-continuous-integration-and-deployment-cb6f19474b3c">CI/CD</a></li>
-    <li><a href="https://medium.com/better-programming/aws-serverless-app-testing-d1b54037b0a6">Testing</a></li>
-</ul>
 
 ## What Can I Do With This?
 Clone the project and spin it up. This project was used as an example on a Medium series on how to create a serverless app and set it up with CI/CD.
