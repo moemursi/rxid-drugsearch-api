@@ -3,7 +3,7 @@
 
 exports.static_values = {
     PAGINATE_LIMIT: 50,
-    RC_ALREADY_EXISTS: 'ALREAY_EXISTS'
+    RC_ALREADY_EXISTS: 'ALREADY_EXISTS'
 };
 
 /**
