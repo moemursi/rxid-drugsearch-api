@@ -5,6 +5,7 @@ const nlmSearch = require('./services/nlmClient');
 const openFDASearch = require('./services/openFDAClient');
 
 const promisesUtil = require('../../common/utils/promisesUtil');
+const formatDataUtil = require('../drugSearch/utils/formatData');
 
 /**
  * Drug Identifier Search Controller
@@ -98,7 +99,7 @@ module.exports.getDrugInfo = query => {
 
             // TODO: Extract this garbage to a model
             let drugInformation = {
-                mechanismOfAction: {},
+                mechanismOfAction: '',
                 warnings: {},
                 precautions: {},
                 boxedWarning: {},
@@ -134,50 +135,65 @@ module.exports.getDrugInfo = query => {
                     let fdaNDC = results[1];
 
                     if (fdaLabels) {
-                        drugInformation.mechanismOfAction = fdaLabels.data
-                            .results[0].mechanism_of_action
-                            ? fdaLabels.data.results[0].mechanism_of_action
-                            : 'N/A';
+                        drugInformation.mechanismOfAction = formatDataUtil.formatFDAData(
+                            fdaLabels.data.results[0].mechanism_of_action[0]
+                        );
 
                         drugInformation.precautions = fdaLabels.data.results[0]
                             .precautions
-                            ? fdaLabels.data.results[0].precautions
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].precautions[0]
+                              )
                             : 'N/A';
 
                         if (fdaLabels.data.results[0].warnings_and_cautions) {
-                            drugInformation.warnings =
-                                fdaLabels.data.results[0].warnings_and_cautions;
+                            drugInformation.warnings = formatDataUtil.formatFDAData(
+                                fdaLabels.data.results[0]
+                                    .warnings_and_cautions[0]
+                            );
                         } else if (fdaLabels.data.results[0].warnings) {
-                            drugInformation.warnings =
-                                fdaLabels.data.results[0].warnings;
+                            drugInformation.warnings = formatDataUtil.formatFDAData(
+                                fdaLabels.data.results[0].warnings[0]
+                            );
                         } else {
                             drugInformation.warnings = 'N/A';
                         }
 
                         drugInformation.boxedWarning = fdaLabels.data.results[0]
                             .boxed_warning
-                            ? fdaLabels.data.results[0].boxed_warning
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].boxed_warning[0]
+                              )
                             : 'N/A';
 
                         drugInformation.patientLabelInformation = fdaLabels.data
                             .results[0].spl_patient_package_insert
-                            ? fdaLabels.data.results[0]
-                                  .spl_patient_package_insert
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0]
+                                      .spl_patient_package_insert[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.general = fdaLabels.data
                             .results[0].indications_and_usage
-                            ? fdaLabels.data.results[0].indications_and_usage
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0]
+                                      .indications_and_usage[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.pediatric = fdaLabels.data
                             .results[0].pediatric_use
-                            ? fdaLabels.data.results[0].pediatric_use
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].pediatric_use[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.geriatric = fdaLabels.data
                             .results[0].geriatric_use
-                            ? fdaLabels.data.results[0].geriatric_use
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].geriatric_use[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.disclaimer = fdaLabels.data
