@@ -36,7 +36,7 @@ module.exports = {
       "valid-typeof": 2, // Ensure that the results of typeof are compared against a valid string
     },
     "parserOptions": {
-      'ecmaVersion': 2017
+      'ecmaVersion': 2018
     },
   
     "env": {

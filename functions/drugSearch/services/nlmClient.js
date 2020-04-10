@@ -105,20 +105,20 @@ function remapMarkingResults(data) {
     if (data.length > 0) {
         for (let result of data) {
             markingsCollection.push({
-                medicine_name: result.medicine_name,
-                marketing_act_code: '',
+                medicineName: result.medicine_name,
+                marketingActCode: '',
                 ndc9: result.ndc9,
                 rxcui: result.rxcui,
                 rxstring: result.rxstring,
                 rxtty: result.rxtty,
-                splIngredients: result.spl_ingredients,
-                splStrength: result.spl_strength,
-                splColor: result.splColor,
-                splColorText: result.splcolor_text,
-                splImprint: result.splimprint,
-                splShape: result.splshape,
-                splShapeText: result.splshape_text,
-                splSize: result.splsize
+                ingredients: result.spl_ingredients,
+                strength: result.spl_strength,
+                color: result.splColor,
+                colorText: result.splcolor_text,
+                imprint: result.splimprint,
+                shape: result.splshape,
+                shapeText: result.splshape_text,
+                size: result.splsize
             });
         }
     }
@@ -139,8 +139,8 @@ function remapImageResults(data) {
             imageCollection.push({
                 rxcui: image.rxcui,
                 ndc11: image.ndc11,
-                splSetId: image.splSetId,
-                splVersion: image.splVersion,
+                setId: image.splSetId,
+                version: image.splVersion,
                 name: image.name,
                 labeler: image.labeler,
                 imageUrl: image.imageUrl,

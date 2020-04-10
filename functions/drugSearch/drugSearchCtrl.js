@@ -5,7 +5,7 @@ const nlmSearch = require('./services/nlmClient');
 const openFDASearch = require('./services/openFDAClient');
 
 const promisesUtil = require('../../common/utils/promisesUtil');
-const collectionUtil = require('../../common/utils/collectionUtil');
+const formatDataUtil = require('../drugSearch/utils/formatData');
 
 /**
  * Drug Identifier Search Controller
@@ -86,7 +86,7 @@ module.exports.getDrugIdentifiers = query => {
  * @param {*} query searchName - derived label of drug (e.g. Lipitor 10mg Tablet)
  * @returns {Promise} FDA Drug Info
  */
-exports.searchFDADrugInfo = query => {
+module.exports.getDrugInfo = query => {
     return new Promise(async resolve => {
         let resp = {
             success: false,
@@ -94,23 +94,12 @@ exports.searchFDADrugInfo = query => {
             errors: {}
         };
 
-        const input = getParameterObject(query);
-        let validationResults = validateDrugSearchInput(input);
-        if (collectionUtil.isEmpty(input.searchName)) {
-            resp.errors = validationResults.results;
-            resolve({
-                statusCode: 400,
-                body: JSON.stringify({
-                    error: 'Validation error occurred: Parameters missing.'
-                }),
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                }
-            });
-        } else {
+        if (query && query.queryStringParameters) {
+            const input = query.queryStringParameters.searchName;
+
             // TODO: Extract this garbage to a model
             let drugInformation = {
-                mechanismOfAction: {},
+                mechanismOfAction: '',
                 warnings: {},
                 precautions: {},
                 boxedWarning: {},
@@ -132,11 +121,11 @@ exports.searchFDADrugInfo = query => {
             let promiseCollection = [];
 
             promiseCollection.push(
-                openFDASearch.searchOpenFdaDrugLabelsPromise(input.searchName)
+                openFDASearch.searchOpenFdaDrugLabelsPromise(input)
             );
 
             promiseCollection.push(
-                openFDASearch.searchOpenFdaDrugNDCPromise(input.searchName)
+                openFDASearch.searchOpenFdaDrugNDCPromise(input)
             );
 
             Promise.all(promiseCollection)
@@ -146,50 +135,65 @@ exports.searchFDADrugInfo = query => {
                     let fdaNDC = results[1];
 
                     if (fdaLabels) {
-                        drugInformation.mechanismOfAction = fdaLabels.data
-                            .results[0].mechanism_of_action
-                            ? fdaLabels.data.results[0].mechanism_of_action
-                            : 'N/A';
+                        drugInformation.mechanismOfAction = formatDataUtil.formatFDAData(
+                            fdaLabels.data.results[0].mechanism_of_action[0]
+                        );
 
                         drugInformation.precautions = fdaLabels.data.results[0]
                             .precautions
-                            ? fdaLabels.data.results[0].precautions
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].precautions[0]
+                              )
                             : 'N/A';
 
                         if (fdaLabels.data.results[0].warnings_and_cautions) {
-                            drugInformation.warnings =
-                                fdaLabels.data.results[0].warnings_and_cautions;
+                            drugInformation.warnings = formatDataUtil.formatFDAData(
+                                fdaLabels.data.results[0]
+                                    .warnings_and_cautions[0]
+                            );
                         } else if (fdaLabels.data.results[0].warnings) {
-                            drugInformation.warnings =
-                                fdaLabels.data.results[0].warnings;
+                            drugInformation.warnings = formatDataUtil.formatFDAData(
+                                fdaLabels.data.results[0].warnings[0]
+                            );
                         } else {
                             drugInformation.warnings = 'N/A';
                         }
 
                         drugInformation.boxedWarning = fdaLabels.data.results[0]
                             .boxed_warning
-                            ? fdaLabels.data.results[0].boxed_warning
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].boxed_warning[0]
+                              )
                             : 'N/A';
 
                         drugInformation.patientLabelInformation = fdaLabels.data
                             .results[0].spl_patient_package_insert
-                            ? fdaLabels.data.results[0]
-                                  .spl_patient_package_insert
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0]
+                                      .spl_patient_package_insert[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.general = fdaLabels.data
                             .results[0].indications_and_usage
-                            ? fdaLabels.data.results[0].indications_and_usage
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0]
+                                      .indications_and_usage[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.pediatric = fdaLabels.data
                             .results[0].pediatric_use
-                            ? fdaLabels.data.results[0].pediatric_use
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].pediatric_use[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.geriatric = fdaLabels.data
                             .results[0].geriatric_use
-                            ? fdaLabels.data.results[0].geriatric_use
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0].geriatric_use[0]
+                              )
                             : 'N/A';
 
                         drugInformation.drugUsage.disclaimer = fdaLabels.data
@@ -213,103 +217,29 @@ exports.searchFDADrugInfo = query => {
                     fdaResults.results.push(drugInformation);
                     resp.results = fdaResults;
 
-                    resolve({
-                        statusCode: resp.success == true ? 202 : 400,
-                        body: JSON.stringify(
-                            resp.success == true ? resp.results : resp.errors
-                        ),
-                        headers: {
-                            'Access-Control-Allow-Origin': '*'
-                        }
-                    });
+                    let statusCode = resp.success == true ? 202 : 400;
+                    let body = resp.success ? resp.results : resp.errors;
+
+                    resolve(
+                        promisesUtil.formatPromisePayload(statusCode, {
+                            body
+                        })
+                    );
                 })
                 .catch(reason => {
-                    resolve({
-                        statusCode: 400,
-                        body: JSON.stringify({
+                    resolve(
+                        promisesUtil.formatPromisePayload(400, {
                             error: reason
-                        }),
-                        headers: {
-                            'Access-Control-Allow-Origin': '*'
-                        }
-                    });
+                        })
+                    );
                 });
+        } else {
+            resolve(
+                promisesUtil.formatPromisePayload(400, {
+                    error:
+                        'Validation error occurred: Search parameter missing.'
+                })
+            );
         }
     });
 };
-
-/**
- * Checks to see where in the event the client placed the query
- * parameters.
- *
- * @param {*} query original event input
- * @returns {Object} parameter object
- */
-function getParameterObject(query) {
-    if (query) {
-        if (
-            !collectionUtil.isEmpty(query.name) ||
-            !collectionUtil.isEmpty(query.searchName) ||
-            !collectionUtil.isEmpty(query.ndc) ||
-            !collectionUtil.isEmpty(query.userLat) ||
-            !collectionUtil.isEmpty(query.gcn_seqno)
-        ) {
-            return query;
-        } else if (
-            query.headers &&
-            (!collectionUtil.isEmpty(query.headers.name) ||
-                !collectionUtil.isEmpty(query.headers.ndc) ||
-                !collectionUtil.isEmpty(query.headers.userLat) ||
-                !collectionUtil.isEmpty(query.headers.gcn_seqno) ||
-                !collectionUtil.isEmpty(query.headers.searchName))
-        ) {
-            return query.headers;
-        } else if (
-            query.queryStringParameters &&
-            (!collectionUtil.isEmpty(query.queryStringParameters.name) ||
-                !collectionUtil.isEmpty(query.queryStringParameters.ndc) ||
-                !collectionUtil.isEmpty(query.queryStringParameters.userLat) ||
-                !collectionUtil.isEmpty(
-                    query.queryStringParameters.gcn_seqno
-                ) ||
-                !collectionUtil.isEmpty(query.queryStringParameters.searchName))
-        ) {
-            return query.queryStringParameters;
-        }
-    } else {
-        return null;
-    }
-}
-
-/**
- * Validates Drug Query Arguments
- *
- * @param {*} query input params
- * @returns {boolean} success
- */
-function validateDrugSearchInput(query) {
-    let validation = {
-        error: false,
-        results: ''
-    };
-    if (!collectionUtil.isEmpty(query)) {
-        if (
-            !(
-                !collectionUtil.isEmpty(query.name) ||
-                !collectionUtil.isEmpty(query.searchName)
-            )
-        ) {
-            if (!collectionUtil.isEmpty(query.gcnSeqNo)) {
-                validation.error = true;
-                validation.results =
-                    'Query Invalid! A name or searchName is required for Drug Search. Otherwise, provide gcnSeqNo';
-            }
-        }
-    } else {
-        validation.results =
-            'Query parameters must not be null! Requires at least a name for Drug Search';
-        validation.error = true;
-    }
-
-    return validation;
-}
