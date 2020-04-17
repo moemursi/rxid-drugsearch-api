@@ -102,7 +102,6 @@ module.exports.getDrugInfo = query => {
                 mechanismOfAction: '',
                 warnings: {},
                 precautions: {},
-                boxedWarning: {},
                 patientLabelInformation: {},
                 drugUsage: {
                     general: {},
@@ -160,10 +159,12 @@ module.exports.getDrugInfo = query => {
                         } else if (
                             fdaLabels.data.results[0].warnings_and_cautions
                         ) {
-                            drugInformation.warnings = formatDataUtil.formatFDAData(
-                                fdaLabels.data.results[0]
-                                    .warnings_and_cautions[0]
-                            );
+                            drugInformation.warnings = formatDataUtil
+                                .formatFDAData(
+                                    fdaLabels.data.results[0]
+                                        .warnings_and_cautions[0]
+                                )
+                                .replace('WARNINGS AND PRECAUTIONS ', '');
                         } else if (fdaLabels.data.results[0].warnings) {
                             drugInformation.warnings = formatDataUtil.formatFDAData(
                                 fdaLabels.data.results[0].warnings[0]
@@ -183,10 +184,12 @@ module.exports.getDrugInfo = query => {
 
                         drugInformation.drugUsage.general = fdaLabels.data
                             .results[0].indications_and_usage
-                            ? formatDataUtil.formatFDAData(
-                                  fdaLabels.data.results[0]
-                                      .indications_and_usage[0]
-                              )
+                            ? formatDataUtil
+                                  .formatFDAData(
+                                      fdaLabels.data.results[0]
+                                          .indications_and_usage[0]
+                                  )
+                                  .replace('INDICATIONS AND USAGE ', '')
                             : 'General drug usage data is not available.';
 
                         drugInformation.drugUsage.pediatric = fdaLabels.data
@@ -210,7 +213,11 @@ module.exports.getDrugInfo = query => {
 
                         drugInformation.description = fdaLabels.data.results[0]
                             .description
-                            ? fdaLabels.data.results[0].description[0]
+                            ? formatDataUtil
+                                  .formatFDAData(
+                                      fdaLabels.data.results[0].description[0]
+                                  )
+                                  .replace('DESCRIPTION ', '')
                             : 'Drug description is not available.';
                     }
 
