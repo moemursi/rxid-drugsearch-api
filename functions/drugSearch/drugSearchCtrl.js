@@ -95,7 +95,6 @@ module.exports.getDrugInfo = query => {
         };
 
         if (query && query.queryStringParameters) {
-            console.log(query.searchName);
             const input = query.queryStringParameters.searchName;
 
             // TODO: Extract this garbage to a model
@@ -136,6 +135,9 @@ module.exports.getDrugInfo = query => {
                     let fdaNDC = results[1];
 
                     if (fdaLabels) {
+                        let rxData = fdaLabels.data;
+                        console.log(rxData);
+
                         drugInformation.mechanismOfAction = fdaLabels.data
                             .results[0].mechanism_of_action
                             ? formatDataUtil.formatFDAData(
@@ -151,7 +153,13 @@ module.exports.getDrugInfo = query => {
                               )
                             : 'N/A';
 
-                        if (fdaLabels.data.results[0].warnings_and_cautions) {
+                        if (fdaLabels.data.results[0].boxed_warning) {
+                            drugInformation.warnings = formatDataUtil.formatFDAData(
+                                fdaLabels.data.results[0].boxed_warning[0]
+                            );
+                        } else if (
+                            fdaLabels.data.results[0].warnings_and_cautions
+                        ) {
                             drugInformation.warnings = formatDataUtil.formatFDAData(
                                 fdaLabels.data.results[0]
                                     .warnings_and_cautions[0]
@@ -161,15 +169,16 @@ module.exports.getDrugInfo = query => {
                                 fdaLabels.data.results[0].warnings[0]
                             );
                         } else {
-                            drugInformation.warnings = 'N/A';
+                            drugInformation.warnings =
+                                'Warnings are not available.';
                         }
 
-                        drugInformation.boxedWarning = fdaLabels.data.results[0]
-                            .boxed_warning
-                            ? formatDataUtil.formatFDAData(
-                                  fdaLabels.data.results[0].boxed_warning[0]
-                              )
-                            : 'N/A';
+                        // drugInformation.boxedWarning = fdaLabels.data.results[0]
+                        //     .boxed_warning
+                        //     ? formatDataUtil.formatFDAData(
+                        //           fdaLabels.data.results[0].boxed_warning[0]
+                        //       )
+                        //     : 'N/A';
 
                         drugInformation.patientLabelInformation = fdaLabels.data
                             .results[0].spl_patient_package_insert
@@ -201,9 +210,14 @@ module.exports.getDrugInfo = query => {
                               )
                             : 'N/A';
 
-                        drugInformation.drugUsage.disclaimer = fdaLabels.data
-                            .meta.disclaimer
+                        drugInformation.disclaimer = fdaLabels.data.meta
+                            .disclaimer
                             ? fdaLabels.data.meta.disclaimer
+                            : 'N/A';
+
+                        drugInformation.description = fdaLabels.data.results[0]
+                            .description
+                            ? fdaLabels.data.results[0].description[0]
                             : 'N/A';
                     }
 
