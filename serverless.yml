@@ -6,6 +6,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
+  timeout: 10
   region: us-east-1
   apiGateway:
     apiKeySourceType: HEADER

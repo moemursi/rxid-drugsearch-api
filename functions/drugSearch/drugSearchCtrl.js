@@ -95,6 +95,7 @@ module.exports.getDrugInfo = query => {
         };
 
         if (query && query.queryStringParameters) {
+            console.log(query.searchName);
             const input = query.queryStringParameters.searchName;
 
             // TODO: Extract this garbage to a model
@@ -135,9 +136,13 @@ module.exports.getDrugInfo = query => {
                     let fdaNDC = results[1];
 
                     if (fdaLabels) {
-                        drugInformation.mechanismOfAction = formatDataUtil.formatFDAData(
-                            fdaLabels.data.results[0].mechanism_of_action[0]
-                        );
+                        drugInformation.mechanismOfAction = fdaLabels.data
+                            .results[0].mechanism_of_action
+                            ? formatDataUtil.formatFDAData(
+                                  fdaLabels.data.results[0]
+                                      .mechanism_of_action[0]
+                              )
+                            : 'N/A';
 
                         drugInformation.precautions = fdaLabels.data.results[0]
                             .precautions

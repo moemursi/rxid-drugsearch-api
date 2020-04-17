@@ -1,5 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
+// /* eslint-disable no-undef */
+// /* eslint-disable no-unused-vars */
 // const expect = require('chai').expect;
 // const sinon = require('sinon');
 
