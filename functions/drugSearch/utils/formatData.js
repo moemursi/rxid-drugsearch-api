@@ -9,7 +9,7 @@
  */
 module.exports.formatFDAData = unformattedString => {
     let formattedString = unformattedString
-        ? getStringWithoutNumberPrefix(unformattedString)
+        ? removeBulletPoints(getStringWithoutNumberPrefix(unformattedString))
         : 'Not available.';
 
     return formattedString;
@@ -23,4 +23,18 @@ module.exports.formatFDAData = unformattedString => {
 function getStringWithoutNumberPrefix(string) {
     let stringSplit = string.split(/(?<=^\S+)\s/);
     return stringSplit.length > 1 ? stringSplit[1] : stringSplit[0];
+}
+
+/**
+ * Removes odd bullet point from text
+ *
+ * @param {*} string unformatted string
+ * @returns {String} formatted string
+ */
+function removeBulletPoints(string) {
+    console.log(string);
+    let stringFormatted = string.match()
+        ? string.replace('\u2022', '')
+        : string;
+    return stringFormatted;
 }

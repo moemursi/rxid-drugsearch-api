@@ -153,9 +153,17 @@ module.exports.getDrugInfo = query => {
                             : 'Precautions are not available.';
 
                         if (fdaLabels.data.results[0].boxed_warning) {
-                            drugInformation.warnings = formatDataUtil.formatFDAData(
+                            console.log(
+                                fdaLabels.data.results[0].boxed_warning
+                            );
+                            let format = formatDataUtil.formatFDAData(
                                 fdaLabels.data.results[0].boxed_warning[0]
                             );
+                            drugInformation.warnings = format.match('WARNING: ')
+                                ? format.split('WARNING: ')[1]
+                                : format.match('WARNING ')
+                                ? format.split('WARNING ')[1]
+                                : format;
                         } else if (
                             fdaLabels.data.results[0].warnings_and_cautions
                         ) {
@@ -190,6 +198,7 @@ module.exports.getDrugInfo = query => {
                                           .indications_and_usage[0]
                                   )
                                   .replace('INDICATIONS AND USAGE ', '')
+                                  .replace('AND USAGE ', '')
                             : 'General drug usage data is not available.';
 
                         drugInformation.drugUsage.pediatric = fdaLabels.data
