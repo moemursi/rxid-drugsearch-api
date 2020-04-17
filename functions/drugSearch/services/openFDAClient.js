@@ -22,6 +22,7 @@ module.exports.searchOpenFdaDrugLabelsPromise = function(name) {
 
         // Only Process the request if name or ndc exists
         if (name) {
+            console.log(name);
             let moaArg = name ? 'information_for_patients:' + name : '';
 
             // Format Request URL
