@@ -199,6 +199,8 @@ module.exports.getDrugInfo = query => {
                                   )
                                   .replace('INDICATIONS AND USAGE ', '')
                                   .replace('AND USAGE ', '')
+                                  .replace('INDICATIONS & USAGE ', '')
+                                  .replace('& USAGE ', '')
                             : 'General drug usage data is not available.';
 
                         drugInformation.drugUsage.pediatric = fdaLabels.data
