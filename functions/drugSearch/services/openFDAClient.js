@@ -5,6 +5,8 @@ const apiUtil = require('../../../common/utils/apiUtil');
 
 const openFdaBaseUrl = 'https://api.fda.gov/drug/';
 
+const API_KEY = '3OJcq7wHXHQd96a2Dyjlx7mMiCBGcVFwRybezjlk';
+
 /**
  * Open FDA Drug Labels Search returns mechanism of action, adverse affects,
  * and all patient labeling criteria from SPL data.
@@ -23,14 +25,17 @@ module.exports.searchOpenFdaDrugLabelsPromise = function(name) {
         // Only Process the request if name or ndc exists
         if (name) {
             console.log(name);
-            let moaArg = name ? 'information_for_patients:' + name : '';
 
             // Format Request URL
-            let identifierSearchUrl =
-                openFdaBaseUrl + 'label.json?search=' + moaArg;
+            let identifierSearchUrl = `${openFdaBaseUrl}label.json?api_key=${API_KEY}&search=${name}`;
+
+            let headers = {
+                'content-type': 'application/json; charset=utf-8',
+                Accept: 'application/json'
+            };
 
             await apiUtil
-                .submitRequest(identifierSearchUrl)
+                .submitRequest(identifierSearchUrl, { headers: headers })
                 .then(response => {
                     result.success = response.statusCode == 200 ? true : false;
                     result.data = response.data;
@@ -39,6 +44,7 @@ module.exports.searchOpenFdaDrugLabelsPromise = function(name) {
                 .catch(error => {
                     console.log(error);
                 });
+
             resolve(result);
         }
     });
@@ -71,8 +77,7 @@ module.exports.searchOpenFdaDrugNDCPromise = function(name) {
                 : '';
 
             // Format Request URL
-            let identifierSearchUrl =
-                openFdaBaseUrl + 'ndc.json?search=' + searchArg;
+            let identifierSearchUrl = `${openFdaBaseUrl}ndc.json?api_key=${API_KEY}&search=${searchArg}`;
 
             await apiUtil
                 .submitRequest(identifierSearchUrl)
