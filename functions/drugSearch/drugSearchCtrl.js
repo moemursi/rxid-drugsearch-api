@@ -26,50 +26,59 @@ module.exports.getDrugIdentifiers = query => {
 
         if (query && query.queryStringParameters) {
             let drugName = query.queryStringParameters.drugName;
-            if (!drugName) {
-                resolve(
-                    promisesUtil.formatPromisePayload(400, {
-                        error: 'Drug name parameter is empty!!!'
-                    })
-                );
-            } else {
-                let nlmRxImageSuccess = false;
-                let nlmDrugDatabaseSuccess = false;
+            let drugStrength = query.queryStringParameters.drugStrength;
+            let drugColor = query.queryStringParameters.drugColor;
+            let drugShape = query.queryStringParameters.drugShape;
 
-                // Call the NLM Drug Image Search Service
-                await nlmSearch
-                    .nlmDrugImageSearch(drugName)
-                    .then(async response => {
-                        resp.results.identifier = {
-                            name: drugName,
-                            nlmRxImages: response.data
-                        };
-                        nlmRxImageSuccess = response.success;
+            // if (!drugName) {
+            //     resolve(
+            //         promisesUtil.formatPromisePayload(400, {
+            //             error: 'Drug name parameter is empty!!!'
+            //         })
+            //     );
+            // } else {
+            let nlmRxImageSuccess = false;
+            let nlmDrugDatabaseSuccess = false;
 
-                        // Use the RXCUIs from the images to grab
-                        // markings from the NLM Discovery Search
-                        // service
-                        for (let image of resp.results.identifier.nlmRxImages) {
-                            await nlmSearch
-                                .nlmDataDiscoverySearch(image.rxcui)
-                                .then(response => {
-                                    image.markings = response.data;
-                                    nlmDrugDatabaseSuccess = true;
-                                })
-                                .catch(error => resp.errors.push(error));
-                        }
-                    })
-                    .catch(error => resp.errors.push(error));
+            // Call the NLM Drug Image Search Service
+            await nlmSearch
+                .nlmDrugImageSearch({
+                    drugName: drugName,
+                    drugStrength: drugStrength,
+                    drugColor: drugColor,
+                    drugShape: drugShape
+                })
+                .then(async response => {
+                    resp.results.identifier = {
+                        name: drugName,
+                        nlmRxImages: response.data
+                    };
+                    nlmRxImageSuccess = response.success;
 
-                resolve(
-                    promisesUtil.formatPromisePayload(
-                        nlmRxImageSuccess || nlmDrugDatabaseSuccess ? 200 : 400,
-                        nlmRxImageSuccess || nlmDrugDatabaseSuccess
-                            ? resp.results
-                            : resp.errors
-                    )
-                );
-            }
+                    // Use the RXCUIs from the images to grab
+                    // markings from the NLM Discovery Search
+                    // service
+                    for (let image of resp.results.identifier.nlmRxImages) {
+                        await nlmSearch
+                            .nlmDataDiscoverySearch(image.rxcui)
+                            .then(response => {
+                                image.markings = response.data;
+                                nlmDrugDatabaseSuccess = true;
+                            })
+                            .catch(error => resp.errors.push(error));
+                    }
+                })
+                .catch(error => resp.errors.push(error));
+
+            resolve(
+                promisesUtil.formatPromisePayload(
+                    nlmRxImageSuccess || nlmDrugDatabaseSuccess ? 200 : 400,
+                    nlmRxImageSuccess || nlmDrugDatabaseSuccess
+                        ? resp.results
+                        : resp.errors
+                )
+            );
+            // }
         } else {
             resolve(
                 promisesUtil.formatPromisePayload(400, {
@@ -268,6 +277,90 @@ module.exports.getDrugInfo = query => {
                 promisesUtil.formatPromisePayload(400, {
                     error:
                         'Validation error occurred: Search parameter missing.'
+                })
+            );
+        }
+    });
+};
+
+/**
+ * Drug Identifier and Label Search Endpoint
+ *
+ * @param {*} query drugName
+ * @returns {Promise} Drug label and identifiers
+ */
+module.exports.getAllDrugInfo = query => {
+    return new Promise(async resolve => {
+        let resp = {
+            success: false,
+            results: {},
+            errors: {}
+        };
+
+        if (query && query.queryStringParameters) {
+            const input = query.queryStringParameters.drugName;
+
+            let drugResults = {
+                searchTerm: input,
+                identifiers: {},
+                labelData: {}
+            };
+
+            let promiseCollection = [];
+
+            promiseCollection.push(
+                this.getDrugIdentifiers({
+                    queryStringParameters: { drugName: input }
+                })
+            );
+
+            promiseCollection.push(
+                this.getDrugInfo({
+                    queryStringParameters: { searchName: input }
+                })
+            );
+
+            Promise.all(promiseCollection)
+                .then(results => {
+                    let identifiers = results[0];
+
+                    let labelInfo = results[1];
+
+                    if (identifiers) {
+                        drugResults.identifiers = JSON.parse(
+                            identifiers.body
+                        ).identifier;
+                    }
+
+                    if (labelInfo) {
+                        drugResults.labelData = JSON.parse(
+                            labelInfo.body
+                        ).body.results[0];
+                    }
+
+                    resp.success = true;
+                    resp.results = drugResults;
+
+                    let statusCode = resp.success == true ? 202 : 400;
+                    let body = resp.success ? resp.results : resp.errors;
+
+                    resolve(
+                        promisesUtil.formatPromisePayload(statusCode, {
+                            body
+                        })
+                    );
+                })
+                .catch(reason => {
+                    resolve(
+                        promisesUtil.formatPromisePayload(400, {
+                            error: reason
+                        })
+                    );
+                });
+        } else {
+            resolve(
+                promisesUtil.formatPromisePayload(400, {
+                    error: 'Validation error occurred: Drug name missing.'
                 })
             );
         }

@@ -12,10 +12,10 @@ const nlmDataDiscoveryUrl =
  * NLM RxImage returns images per manufacturer of a drug.
  * A name string is required.
  *
- * @param {String} name drug name
+ * @param {String} query drug query
  * @returns {Promise} NLM RxImages
  */
-module.exports.nlmDrugImageSearch = function(name) {
+module.exports.nlmDrugImageSearch = function(query) {
     return new Promise(async resolve => {
         let result = {
             success: false,
@@ -23,11 +23,18 @@ module.exports.nlmDrugImageSearch = function(name) {
         };
 
         // Only Process the request if name or ndc exists
-        if (name) {
-            let nameArg = name ? 'name=' + name : '';
+        if (query) {
+            let args = [];
+            args.push(query.drugName ? 'name=' + query.drugName : '');
+            args.push(query.drugColor ? 'color=' + query.drugColor : '');
+            args.push(query.drugShape ? 'shape=' + query.drugShape : '');
+            // let nameArg = query.drugName ? 'name=' + query.drugName : '';
+            // let colorArg = query.drugColor ? 'color=' + query.drugColor : '';
+            // let shapeArg = query.drugShape ? 'shape=' + query.drugShape : '';
 
             // Format Request URL
-            let identifierSearchUrl = baseRxImageUrl + '/rxbase?' + nameArg;
+            let identifierSearchUrl =
+                baseRxImageUrl + '/rxbase?' + args.join('&');
 
             await apiUtil
                 .submitRequest(identifierSearchUrl)
