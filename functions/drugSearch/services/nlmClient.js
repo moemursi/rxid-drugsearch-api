@@ -28,9 +28,7 @@ module.exports.nlmDrugImageSearch = function(query) {
             args.push(query.drugName ? 'name=' + query.drugName : '');
             args.push(query.drugColor ? 'color=' + query.drugColor : '');
             args.push(query.drugShape ? 'shape=' + query.drugShape : '');
-            // let nameArg = query.drugName ? 'name=' + query.drugName : '';
-            // let colorArg = query.drugColor ? 'color=' + query.drugColor : '';
-            // let shapeArg = query.drugShape ? 'shape=' + query.drugShape : '';
+            args.push(query.drugImprint ? 'imprint=' + query.drugImprint : '');
 
             // Format Request URL
             let identifierSearchUrl =

@@ -26,27 +26,18 @@ module.exports.getDrugIdentifiers = query => {
 
         if (query && query.queryStringParameters) {
             let drugName = query.queryStringParameters.drugName;
-            let drugStrength = query.queryStringParameters.drugStrength;
-            let drugColor = query.queryStringParameters.drugColor;
-            let drugShape = query.queryStringParameters.drugShape;
 
-            // if (!drugName) {
-            //     resolve(
-            //         promisesUtil.formatPromisePayload(400, {
-            //             error: 'Drug name parameter is empty!!!'
-            //         })
-            //     );
-            // } else {
             let nlmRxImageSuccess = false;
             let nlmDrugDatabaseSuccess = false;
 
             // Call the NLM Drug Image Search Service
             await nlmSearch
                 .nlmDrugImageSearch({
-                    drugName: drugName,
-                    drugStrength: drugStrength,
-                    drugColor: drugColor,
-                    drugShape: drugShape
+                    drugName: query.queryStringParameters.drugName,
+                    drugStrength: query.queryStringParameters.drugStrength,
+                    drugColor: query.queryStringParameters.drugColor,
+                    drugShape: query.queryStringParameters.drugShape,
+                    drugImprint: query.queryStringParameters.drugImprint
                 })
                 .then(async response => {
                     resp.results.identifier = {
@@ -78,7 +69,6 @@ module.exports.getDrugIdentifiers = query => {
                         : resp.errors
                 )
             );
-            // }
         } else {
             resolve(
                 promisesUtil.formatPromisePayload(400, {
