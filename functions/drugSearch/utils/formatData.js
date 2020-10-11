@@ -32,7 +32,6 @@ function getStringWithoutNumberPrefix(string) {
  * @returns {String} formatted string
  */
 function removeBulletPoints(string) {
-    console.log(string);
     let stringFormatted = string.match()
         ? string.replace('\u2022', '')
         : string;

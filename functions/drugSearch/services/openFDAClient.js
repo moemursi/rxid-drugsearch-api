@@ -5,7 +5,7 @@ const apiUtil = require('../../../common/utils/apiUtil');
 
 const openFdaBaseUrl = 'https://api.fda.gov/drug/';
 
-const API_KEY = '3OJcq7wHXHQd96a2Dyjlx7mMiCBGcVFwRybezjlk';
+const API_KEY = process.env.OPEN_FDA_API_KEY;
 
 /**
  * Open FDA Drug Labels Search returns mechanism of action, adverse affects,

@@ -133,9 +133,6 @@ module.exports.getDrugInfo = query => {
                     let fdaNDC = results[1];
 
                     if (fdaLabels) {
-                        let rxData = fdaLabels.data;
-                        console.log(rxData);
-
                         drugInformation.mechanismOfAction = fdaLabels.data
                             .results[0].mechanism_of_action
                             ? formatDataUtil.formatFDAData(
@@ -152,9 +149,6 @@ module.exports.getDrugInfo = query => {
                             : 'Precautions are not available.';
 
                         if (fdaLabels.data.results[0].boxed_warning) {
-                            console.log(
-                                fdaLabels.data.results[0].boxed_warning
-                            );
                             let format = formatDataUtil.formatFDAData(
                                 fdaLabels.data.results[0].boxed_warning[0]
                             );

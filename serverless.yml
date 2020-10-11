@@ -1,4 +1,7 @@
-# RXID Drug Search Service
+# RxID Drug Search Service
+# API for Drug Search Apps
+
+# author: EdyVision
 
 service: rxid-api
 
