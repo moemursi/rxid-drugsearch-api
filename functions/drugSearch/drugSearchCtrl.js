@@ -7,6 +7,8 @@ const openFDASearch = require('./services/openFDAClient');
 const promisesUtil = require('../../common/utils/promisesUtil');
 const formatDataUtil = require('../drugSearch/utils/formatData');
 
+const stringSimilarity = require('string-similarity');
+
 /**
  * Drug Identifier Search Controller
  *
@@ -26,6 +28,10 @@ module.exports.getDrugIdentifiers = query => {
 
         if (query && query.queryStringParameters) {
             let drugName = query.queryStringParameters.drugName;
+            let drugColor = query.queryStringParameters.drugColor;
+            let drugShape = query.queryStringParameters.drugShape;
+            let drugImprint = query.queryStringParameters.drugImprint;
+            let drugStrength = query.queryStringParameters.drugStrength;
 
             let nlmRxImageSuccess = false;
             let nlmDrugDatabaseSuccess = false;
@@ -33,11 +39,11 @@ module.exports.getDrugIdentifiers = query => {
             // Call the NLM Drug Image Search Service
             await nlmSearch
                 .nlmDrugImageSearch({
-                    drugName: query.queryStringParameters.drugName,
-                    drugStrength: query.queryStringParameters.drugStrength,
-                    drugColor: query.queryStringParameters.drugColor,
-                    drugShape: query.queryStringParameters.drugShape,
-                    drugImprint: query.queryStringParameters.drugImprint
+                    drugName: drugName,
+                    drugStrength: drugStrength,
+                    drugColor: drugColor,
+                    drugShape: drugShape,
+                    drugImprint: drugImprint
                 })
                 .then(async response => {
                     resp.results.identifier = {
@@ -53,7 +59,16 @@ module.exports.getDrugIdentifiers = query => {
                         await nlmSearch
                             .nlmDataDiscoverySearch(image.rxcui)
                             .then(response => {
-                                image.markings = response.data;
+                                let markings = response.data;
+                                if (drugColor && drugShape && drugImprint) {
+                                    markings = filterResults(
+                                        drugColor,
+                                        drugShape,
+                                        drugImprint,
+                                        response.data
+                                    );
+                                }
+                                image.markings = markings;
                                 nlmDrugDatabaseSuccess = true;
                             })
                             .catch(error => resp.errors.push(error));
@@ -350,3 +365,39 @@ module.exports.getAllDrugInfo = query => {
         }
     });
 };
+
+function filterResults(color, shape, imprint, results) {
+    let filteredResults = [];
+    for (let entry of results) {
+        if (
+            stringSimilarity.compareTwoStrings(
+                entry.colorText.toLowerCase(),
+                color.toLowerCase()
+            ) == 1 &&
+            stringSimilarity.compareTwoStrings(
+                entry.shapeText.toLowerCase(),
+                shape.toLowerCase()
+            ) == 1 &&
+            findPartialImprintMatch(
+                imprint.toLowerCase(),
+                entry.imprint.toLowerCase()
+            )
+        ) {
+            filteredResults.push(entry);
+        }
+    }
+
+    return filteredResults;
+}
+
+function findPartialImprintMatch(expectedPartial, fullImprint) {
+    // Split full imprint by semi-colon
+    let splitImprint = fullImprint.split(';');
+    for (let partial of splitImprint) {
+        if (stringSimilarity.compareTwoStrings(expectedPartial, partial) == 1) {
+            return true;
+        }
+    }
+
+    return false;
+}

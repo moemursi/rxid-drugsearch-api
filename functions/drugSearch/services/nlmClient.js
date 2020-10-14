@@ -16,6 +16,7 @@ const nlmDataDiscoveryUrl =
  * @returns {Promise} NLM RxImages
  */
 module.exports.nlmDrugImageSearch = function(query) {
+    console.log(JSON.stringify(query));
     return new Promise(async resolve => {
         let result = {
             success: false,
@@ -41,6 +42,7 @@ module.exports.nlmDrugImageSearch = function(query) {
                         result.data = remapImageResults(
                             response.data.nlmRxImages
                         );
+                        console.log(JSON.stringify(result.data));
                         result.success = true;
                     }
                 })

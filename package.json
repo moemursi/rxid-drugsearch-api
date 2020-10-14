@@ -33,6 +33,7 @@
     "fetch": "^1.1.0",
     "node-fetch": "^2.6.1",
     "serverless-webpack": "^5.3.1",
+    "string-similarity": "^4.0.2",
     "webpack": "^4.42.1",
     "webpack-node-externals": "^1.7.2"
   },
